@@ -1,5 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+
+var credentials = require('./credentials.js');
+
+
 
 var app = express();
 
@@ -30,6 +35,15 @@ app.get('/hello', function(req, res) {
     res.send('Hello world');
 });
 
+app.get("/signed", function(req,res){
+    res.cookie('testCookie', {test : "test"}, {signed : true});
+    res.render('index');
+});
+
+app.get('/allSignedCookies', function(req, res) {
+  console.log("Cookies: ", req.signedCookies);
+});
+
 app.listen(3001, function() {
     console.log("listening on 3000");
 });
@@ -50,6 +64,8 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
+app.use(cookieParser(credentials.cookieSecret));
 
 
 module.exports = app;
